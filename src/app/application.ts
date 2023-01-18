@@ -5,18 +5,28 @@ import { ConfigInterface } from '../common/config/interface.js';
 import { Component } from '../entities/component.js';
 import { DatabaseInterface } from '../common/db/interface.js';
 import { getDbURI } from '../utils/db.js';
+import express, { Express } from 'express';
+import { ControllerInterface } from '../common/controller/interface.js';
+import { ExceptionFilterInterface } from '../common/error/exception-filter-interface.js';
 
 @injectable()
 export class Application {
+  private expressApp: Express;
+
   constructor(
     @inject(Component.LoggerInterface) private logger: LoggerInterface,
     @inject(Component.ConfigInterface) private config: ConfigInterface,
-    @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface
-  ) {}
+    @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface,
+    @inject(Component.FilmController) private filmController: ControllerInterface,
+    @inject(Component.ExceptionFilterInterface) private exceptionFilter: ExceptionFilterInterface,
+    @inject(Component.UserController) private userController: ControllerInterface,
+  ) {
+    this.expressApp = express();
+  }
 
-  public async init() {
-    this.logger.info('Application initialization…');
-    this.logger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
+  async init() {
+    this.logger.info(`Application initialized. Get value from $PORT: ${this.config.get('PORT')}.`);
+    const port = this.config.get('PORT');
 
     const dbURI = getDbURI({
       username: this.config.get('DB_USER'),
@@ -28,5 +38,26 @@ export class Application {
     );
 
     await this.databaseClient.connect(dbURI);
+
+    this.initMiddleware();
+    this.initRoutes();
+    this.initExceptionFilters();
+    this.expressApp.listen(
+      port,
+      () => this.logger.info(`Server started on http://localhost:${port}`)
+    );
+  }
+
+  initRoutes() {
+    this.expressApp.use('/movies', this.filmController.router);
+    this.expressApp.use('/users', this.userController.router);
+  }
+
+  initMiddleware() {
+    this.expressApp.use(express.json());
+  }
+
+  initExceptionFilters() {
+    this.expressApp.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 }

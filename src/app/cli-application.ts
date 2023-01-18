@@ -1,16 +1,15 @@
-import { ICommand } from '../cli-command/interface.js';
+import { CliCommandInterface } from '../cli-command/interface.js';
 
 type ParsedCommand = Record<string, string[]>
 
 export default class CLIApplication {
-  private commands: {[propertyName: string]: ICommand} = {};
+  private commands: {[propertyName: string]: CliCommandInterface} = {};
   private defaultCommand = '--help';
 
   private parseCommand(cliArguments: string[]): ParsedCommand {
-    const parsedCommand: ParsedCommand = {};
     let command = '';
 
-    return cliArguments.reduce((acc, item) => {
+    return cliArguments.reduce<ParsedCommand>((acc, item) => {
       if (item.startsWith('--')) {
         acc[item] = [];
         command = item;
@@ -19,17 +18,17 @@ export default class CLIApplication {
       }
 
       return acc;
-    }, parsedCommand);
+    }, {});
   }
 
-  public registerCommands(commandList: ICommand[]): void {
+  public registerCommands(commandList: CliCommandInterface[]): void {
     commandList.reduce((acc, command) => {
       acc[command.name] = command;
       return acc;
     }, this.commands);
   }
 
-  public getCommand(commandName: string): ICommand {
+  public getCommand(commandName: string): CliCommandInterface {
     return this.commands[commandName] ?? this.commands[this.defaultCommand];
   }
 

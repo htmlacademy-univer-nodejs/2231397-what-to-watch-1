@@ -7,6 +7,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: what-to-watch-db
     ports:
       - 27017:27017
     volumes:

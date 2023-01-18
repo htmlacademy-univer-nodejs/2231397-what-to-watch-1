@@ -1,4 +1,4 @@
-import { CreateCommentDto } from './dto.js';
+import { TComment } from './dto.js';
 import { CommentServiceInterface } from './service-interface.js';
 import { CommentEntity } from './entity.js';
 import { Component } from '../../entities/component.js';
@@ -13,7 +13,7 @@ export class CommentService implements CommentServiceInterface {
     @inject(Component.MovieServiceInterface) private readonly filmService: FilmServiceInterface
   ) { }
 
-  public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
+  public async create(dto: TComment): Promise<DocumentType<CommentEntity>> {
     const comment = await this.commentModel.create(dto);
     await this.filmService.updateMovieRating(dto.movieId, dto.rating);
     await this.filmService.increaseCommentsCount(dto.movieId);

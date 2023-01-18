@@ -1,21 +1,49 @@
-import { TGenre } from '../../types/film.js';
+import { Expose } from 'class-transformer';
+import {TGenre} from '../../types/film.js';
 
-
-export class FilmDto {
+export class MovieModelResponse {
+  @Expose()
   public movieName!: string;
+
+  @Expose()
   public movieDescription!: string;
-  public publishDate!: Date;
-  public genre!: TGenre | undefined;
+
+  @Expose()
+  public publishDate!: number;
+
+  @Expose()
+  public genre!: TGenre;
+
+  @Expose()
   public releaseYear!: number;
+
+  @Expose()
   public rating!: number;
+
+  @Expose()
   public previewVideoPath!: string;
+
+  @Expose()
   public videoPath!: string;
+
+  @Expose()
   public actors!: string[];
+
+  @Expose()
   public director!: string;
+
+  @Expose()
   public movieDuration!: number;
-  public commentsCount!: number;
+
+  @Expose()
   public userId!: string;
+
+  @Expose()
   public posterPath!: string;
+
+  @Expose()
   public backgroundPath!: string;
+
+  @Expose()
   public backgroundColor!: string;
 }
