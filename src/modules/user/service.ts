@@ -5,12 +5,14 @@ import { Component } from '../../entities/component.js';
 import { LoggerInterface } from '../../common/logger/interface.js';
 import { DocumentType, types } from '@typegoose/typegoose';
 import { UserEntity } from './entity.js';
+import { FilmEntity } from '../film/entity.js';
 
 @injectable()
 export class UserService implements UserServiceInterface {
   constructor(
     @inject(Component.LoggerInterface) private logger: LoggerInterface,
-    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
+    @inject(Component.MovieModel) private readonly filmModel: types.ModelType<FilmEntity>,
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -35,5 +37,22 @@ export class UserService implements UserServiceInterface {
     }
 
     return this.create(dto, salt);
+  }
+
+  async addToWatch(movieId: string, userId: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, {
+      $push: { moviesToWatch: movieId }
+    });
+  }
+
+  async deleteToWatch(movieId: string, userId: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, {
+      $pull: { moviesToWatch: movieId }
+    });
+  }
+
+  async findToWatch(userId: string): Promise<DocumentType<FilmEntity>[]> {
+    const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
+    return this.filmModel.find({ _id: { $in: moviesToWatch } });
   }
 }

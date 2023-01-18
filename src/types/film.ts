@@ -21,4 +21,5 @@ export type TFilm = {
   posterPath: string;
   backgroundPath: string;
   backgroundColor: string;
+  isPromo?: boolean;
 }

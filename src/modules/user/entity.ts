@@ -2,11 +2,9 @@ import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoos
 import { createSHA256 } from '../../utils/common.js';
 import { TUser } from '../../types/user.js';
 
-const { prop, modelOptions } = typegoose;
-
 export interface UserEntity extends defaultClasses.Base {}
 
-@modelOptions({
+@typegoose.modelOptions({
   schemaOptions: {
     collection: 'users'
   }
@@ -21,16 +19,19 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     this.password = data.password;
   }
 
-  @prop({required: true, default: ''})
+  @typegoose.prop({required: true, default: ''})
   public name!: string;
 
-  @prop({unique: true, required: true})
+  @typegoose.prop({unique: true, required: true})
   public email!: string;
 
-  @prop()
+  @typegoose.prop()
   public avatarPath!: string;
 
-  @prop({required: true, default: ''})
+  @typegoose.prop({ required: true, default: [] })
+  public moviesToWatch!: string[];
+
+  @typegoose.prop({required: true, default: ''})
   public password!: string;
 
   setPassword(password: string, salt: string) {

@@ -2,7 +2,7 @@ import { TGenre } from '../../types/film.js';
 import { TUser } from '../../types/user.js';
 
 
-export class CreateMovieDto {
+export class FilmDto {
   public movieName!: string;
   public movieDescription!: string;
   public publishDate!: Date;
