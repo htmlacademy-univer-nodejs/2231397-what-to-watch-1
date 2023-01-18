@@ -1,8 +1,9 @@
 import { FilmEntity } from './entity.js';
 import { DocumentType } from '@typegoose/typegoose';
 import { FilmDto } from './dto.js';
+import {DocumentExistsInterface} from '../../common/middlewares/interface.js';
 
-export interface FilmServiceInterface {
+export interface FilmServiceInterface extends DocumentExistsInterface {
   create(dto: FilmDto): Promise<DocumentType<FilmEntity>>;
   findById(movieId: string): Promise<DocumentType<FilmEntity> | null>;
   updateById(movieId: string, dto: FilmDto): Promise<DocumentType<FilmEntity> | null>;
