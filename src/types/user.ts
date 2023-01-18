@@ -1,6 +1,6 @@
 export type TUser = {
   name: string,
   email: string,
-  avatar: string,
+  avatarPath: string,
   password: string,
 }

@@ -1,4 +1,4 @@
-export interface IFileReader {
+export interface FileReaderInterface {
   readonly filename: string;
   read(): void;
 }

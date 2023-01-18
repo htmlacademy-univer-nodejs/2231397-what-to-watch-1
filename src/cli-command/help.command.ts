@@ -1,7 +1,7 @@
-import { ICommand } from './interface.js';
+import { CliCommandInterface } from './interface.js';
 import chalk from 'chalk';
 
-export default class HelpCommand implements ICommand {
+export default class HelpCommand implements CliCommandInterface {
   public readonly name = '--help';
 
   public async execute(): Promise<void> {
@@ -13,6 +13,7 @@ export default class HelpCommand implements ICommand {
             --version:                   # выводит номер версии
             --help:                      # печатает этот текст
             --import <path>:             # импортирует данные из TSV
+            --generate <n> <path> <url>  # генерирует тестовые данные
     `));
   }
 }
