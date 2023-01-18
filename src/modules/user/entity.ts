@@ -18,7 +18,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     this.avatarPath = data.avatarPath;
   }
 
-  @typegoose.prop({required: true, default: ''})
+  @typegoose.prop({ required: true })
   public name!: string;
 
   @typegoose.prop({unique: true, required: true})
@@ -30,15 +30,15 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   @typegoose.prop({ required: true, default: [] })
   public moviesToWatch!: string[];
 
-  @typegoose.prop({required: true, default: ''})
+  @typegoose.prop({required: true})
   public password!: string;
 
   setPassword(password: string, salt: string) {
     this.password = createSHA256(password, salt);
   }
 
-  getPassword() {
-    return this.password;
+  verifyPassword(password: string, salt: string) {
+    return createSHA256(password, salt) === this.password;
   }
 }
 

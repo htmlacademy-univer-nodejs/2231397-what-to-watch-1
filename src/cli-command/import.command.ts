@@ -8,10 +8,10 @@ import { getDbURI } from '../utils/db.js';
 import { UserServiceInterface } from '../modules/user/service-interface.js';
 import { FilmServiceInterface } from '../modules/film/service-interface.js';
 import { DatabaseInterface } from '../common/db/interface.js';
-import { MovieModel } from '../modules/film/entity.js';
+import { FilmModel } from '../modules/film/entity.js';
 import { UserService } from '../modules/user/service.js';
 import { DatabaseService } from '../common/db/service.js';
-import { MovieService } from '../modules/film/service.js';
+import { FilmService } from '../modules/film/service.js';
 import { UserModel } from '../modules/user/entity.js';
 import { TFilm } from '../types/film.js';
 import { ConfigInterface } from '../common/config/interface.js';
@@ -36,8 +36,8 @@ export default class ImportCommand implements CliCommandInterface {
     this.logger = new ConsoleLoggerService();
     this.config = new ConfigService(this.logger);
 
-    this.movieService = new MovieService(this.logger, MovieModel);
-    this.userService = new UserService(this.logger, UserModel);
+    this.movieService = new FilmService(this.logger, FilmModel);
+    this.userService = new UserService(this.logger, UserModel, FilmModel);
     this.databaseService = new DatabaseService(this.logger);
   }
 
@@ -53,10 +53,7 @@ export default class ImportCommand implements CliCommandInterface {
       password: 'default-user.ts-password'
     }, this.salt);
 
-    await this.movieService.create({
-      ...movie,
-      user: user.id,
-    });
+    await this.movieService.create(movie, user.id);
   }
 
   private onComplete(count: number) {

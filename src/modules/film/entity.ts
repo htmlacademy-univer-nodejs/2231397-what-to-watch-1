@@ -1,5 +1,6 @@
 import typegoose, { defaultClasses, getModelForClass, Ref } from '@typegoose/typegoose';
 import { GENRE, TGenre } from '../../types/film.js';
+import { Types } from 'mongoose';
 import { UserEntity } from '../user/entity.js';
 
 export interface FilmEntity extends defaultClasses.Base {}
@@ -46,7 +47,7 @@ export class FilmEntity extends defaultClasses.TimeStamps {
   @typegoose.prop()
   public commentsAmount!: number;
 
-  @typegoose.prop({required: true, ref: UserEntity})
+  @typegoose.prop({required: true, type: Types.ObjectId, ref: UserEntity})
   public user!: Ref<UserEntity>;
 
   @typegoose.prop({required: true})

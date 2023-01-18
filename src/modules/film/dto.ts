@@ -1,8 +1,20 @@
 import { TGenre } from '../../types/film.js';
-import {IsArray, IsBoolean, IsDateString, IsInt, IsMongoId, IsString, Length, Matches, Max, Min} from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  Min
+} from 'class-validator';
 
 
 export class FilmDto {
+  @IsString({message: 'Is required'})
   @Length(2, 100, {message: 'length from 2 to 100 symbols'})
   public movieName!: string;
 
@@ -39,9 +51,6 @@ export class FilmDto {
 
   public commentsCount!: number;
 
-  @IsMongoId({message: 'userId field must be valid an id'})
-  public userId!: string;
-
   @Matches(/(\S+(\.jpg)$)/, {message: 'posterPath must be .jpg format image'})
   @IsString({message: 'posterPath is required'})
   public posterPath!: string;
@@ -53,6 +62,7 @@ export class FilmDto {
   @IsString({message: 'backgroundColor is required'})
   public backgroundColor!: string;
 
+  @IsOptional()
   @IsBoolean({message: 'isPromo should be boolean'})
   public isPromo?: boolean;
 }

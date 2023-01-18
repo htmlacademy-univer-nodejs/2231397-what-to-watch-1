@@ -13,6 +13,7 @@ import { FilmServiceInterface } from '../film/service-interface.js';
 import { CommentRoute } from './const.js';
 import { TComment } from './dto.js';
 import { CommentResponse } from './response.js';
+import { PrivateMiddleware } from '../../common/middlewares/private.js';
 
 export class CommentController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
@@ -25,11 +26,14 @@ export class CommentController extends Controller {
       path: CommentRoute.ROOT,
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(TComment)]
+      middlewares: [
+        new PrivateMiddleware(),
+        new ValidateDtoMiddleware(TComment)
+      ]
     });
   }
 
-  public async create({body}: Request<object, object, TComment>, res: Response): Promise<void> {
+  public async create({body, user}: Request<object, object, TComment>, res: Response): Promise<void> {
     if (!await this.filmService.findById(body.movieId)) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
@@ -38,7 +42,7 @@ export class CommentController extends Controller {
       );
     }
 
-    const comment = await this.commentService.create(body);
+    const comment = await this.commentService.create(body, user.id);
     this.created(res, fillDTO(CommentResponse, comment));
   }
 }

@@ -1,6 +1,8 @@
-import {TFilm, tryGetGenre} from '../types/film.js';
+import { TFilm, tryGetGenre } from '../types/film.js';
 import crypto from 'crypto';
-import {ClassConstructor, plainToInstance} from 'class-transformer';
+import * as jose from 'jose';
+import { TextEncoder } from 'node:util';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 
 export const createMovie = (row: string): TFilm => {
   const tokens = row.replace('\n', '').split('\t');
@@ -18,7 +20,6 @@ export const createMovie = (row: string): TFilm => {
     movieDuration,
     name,
     email,
-    avatarPath,
     posterPath,
     backgroundPath,
     backgroundColor,
@@ -40,7 +41,6 @@ export const createMovie = (row: string): TFilm => {
     user: {
       name,
       email,
-      avatarPath,
     },
     posterPath,
     backgroundPath,
@@ -55,7 +55,7 @@ export const checkPassword = (password: string) => {
 };
 
 export const fillDTO = <T, V>(someDto: ClassConstructor<T>, plainObject: V) =>
-  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+  plainToInstance(someDto, plainObject, {excludeExtraneousValues: true, enableImplicitConversion: true});
 
 export const createErrorObject = (message: string) => ({
   error: message,
@@ -67,3 +67,10 @@ export const createSHA256 = (line: string, salt: string): string => {
   const shaHasher = crypto.createHmac('sha256', salt);
   return shaHasher.update(line).digest('hex');
 };
+
+export const createJWT = async (algorithm: string, jwtSecret: string, payload: object): Promise<string> =>
+  new jose.SignJWT({...payload})
+    .setProtectedHeader({alg: algorithm})
+    .setIssuedAt()
+    .setExpirationTime('2d')
+    .sign(new TextEncoder().encode(jwtSecret));

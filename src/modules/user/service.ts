@@ -1,4 +1,4 @@
-import { CreateUserDto } from './dto.js';
+import {CreateUserDto, LoginUserDto} from './dto.js';
 import { UserServiceInterface } from './service-interface.js';
 import { inject, injectable } from 'inversify';
 import { Component } from '../../entities/component.js';
@@ -53,6 +53,22 @@ export class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<FilmEntity>[]> {
     const films = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.filmModel.find({_id: { $in: films?.moviesToWatch }});
+    return this.filmModel.find({_id: { $in: films?.moviesToWatch }}).populate('user');
+  }
+
+  async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findById(userId);
+  }
+
+  async setUserAvatarPath(userId: string, avatarPath: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, {avatarPath});
+  }
+
+  async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+    if (user && user.verifyPassword(dto.password, salt)) {
+      return user;
+    }
+    return null;
   }
 }
