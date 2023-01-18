@@ -16,7 +16,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     this.name = data.name;
     this.email = data.email;
     this.avatarPath = data.avatarPath;
-    this.password = data.password;
   }
 
   @typegoose.prop({required: true, default: ''})
@@ -26,7 +25,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   public email!: string;
 
   @typegoose.prop()
-  public avatarPath!: string;
+  public avatarPath?: string;
 
   @typegoose.prop({ required: true, default: [] })
   public moviesToWatch!: string[];
