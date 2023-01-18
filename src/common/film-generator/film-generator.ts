@@ -11,7 +11,7 @@ const MAX_RATING = 10;
 const FIRST_WEEK_DAY = 1;
 const LAST_WEEK_DAY = 7;
 
-export default class FilmGenerator implements FIlmGeneratorInterface {
+export class FilmGenerator implements FIlmGeneratorInterface {
   constructor(private readonly mockData: TMockData) {}
 
   public generate(): string {

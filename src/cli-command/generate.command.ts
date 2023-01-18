@@ -1,7 +1,7 @@
 import got from 'got';
 import chalk from 'chalk';
-import TSVFileWriter from '../common/file-writer/tsv-file-writer.js';
-import FilmGenerator from '../common/film-generator/film-generator.js';
+import { TSVFileWriter } from '../common/file-writer/tsv-file-writer.js';
+import { FilmGenerator } from '../common/film-generator/film-generator.js';
 import { CliCommandInterface } from './interface.js';
 import { TMockData } from '../types/mock-data.js';
 import { LoggerInterface } from '../common/logger/interface.js';

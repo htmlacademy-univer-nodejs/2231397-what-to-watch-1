@@ -6,7 +6,7 @@ import { configSchema, ConfigSchema } from './shema.js';
 import { Component } from '../../entities/component.js';
 
 @injectable()
-export default class ConfigService implements ConfigInterface {
+export class ConfigService implements ConfigInterface {
   private config: ConfigSchema;
   private logger: LoggerInterface;
 

@@ -7,7 +7,7 @@ import { DatabaseInterface } from '../common/db/interface.js';
 import { getDbURI } from '../utils/db.js';
 
 @injectable()
-export default class Application {
+export class Application {
   constructor(
     @inject(Component.LoggerInterface) private logger: LoggerInterface,
     @inject(Component.ConfigInterface) private config: ConfigInterface,
