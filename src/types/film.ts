@@ -1,58 +1,24 @@
-import {Length} from 'class-validator';
-import {TActor} from './actor.js';
 import {TUser} from './user.js';
 
-export class TFilm {
-  @Length(2,100)
-  public name: string;
+export const GENRE = ['comedy',  'crime',  'documentary',  'drama',  'horror',  'family',  'romance',  'scifi',  'thriller'];
+export type TGenre = typeof GENRE[number];
+export const tryGetGenre = (genre: string) => GENRE.includes(genre) ? genre : undefined;
 
-  public description: string;
-  public pubDate: Date;
-  public genre: Array<string>;
-  public year: number;
-  public rating: number;
-  public preview: string;
-  public video: string;
-  public actors: TActor[];
-  public producer: string;
-  public duration: number;
-  public commentNumber: number;
-  public user: TUser;
-  public poster: string;
-  public backgroundImg: string;
-  public backgroundColor: string;
-  constructor(
-    name: string,
-    description: string,
-    pubDate: Date,
-    genre: Array<string>,
-    year: number,
-    rating: number,
-    preview: string,
-    video: string,
-    actors: TActor[],
-    producer: string,
-    duration: number,
-    commentNumber: number,
-    user: TUser,
-    poster: string,
-    backgroundImg: string,
-    backgroundColor: string) {
-    this.name = name;
-    this.description = description;
-    this.pubDate = pubDate;
-    this.genre = genre;
-    this.year = year;
-    this.rating = rating;
-    this.preview = preview;
-    this.video = video;
-    this.actors = actors;
-    this.producer = producer;
-    this.duration = duration;
-    this.commentNumber = commentNumber;
-    this.user = user;
-    this.poster = poster;
-    this.backgroundImg = backgroundImg;
-    this.backgroundColor = backgroundColor;
-  }
+export type TFilm = {
+  movieName: string;
+  movieDescription: string;
+  publishDate: Date;
+  genre: TGenre | undefined;
+  releaseYear: number;
+  rating: number;
+  previewVideoPath: string;
+  videoPath: string;
+  actors: string[];
+  director: string;
+  movieDuration: number;
+  commentsAmount: number;
+  user: TUser;
+  posterPath: string;
+  backgroundPath: string;
+  backgroundColor: string;
 }
