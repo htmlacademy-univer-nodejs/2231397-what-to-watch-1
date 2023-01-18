@@ -6,6 +6,8 @@
 /docs/
 .idea/*
 
+/mongodb
+
 .DS_Store
 coverage
 *.log

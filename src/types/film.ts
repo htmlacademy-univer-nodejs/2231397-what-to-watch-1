@@ -1,4 +1,4 @@
-import {TUser} from './user.js';
+import { TUser } from './user.js';
 
 export const GENRE = ['comedy',  'crime',  'documentary',  'drama',  'horror',  'family',  'romance',  'scifi',  'thriller'];
 export type TGenre = typeof GENRE[number];

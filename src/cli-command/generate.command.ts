@@ -4,11 +4,18 @@ import TSVFileWriter from '../common/file-writer/tsv-file-writer.js';
 import FilmGenerator from '../common/film-generator/film-generator.js';
 import { CliCommandInterface } from './interface.js';
 import { TMockData } from '../types/mock-data.js';
+import { LoggerInterface } from '../common/logger/interface.js';
+import { ConsoleLoggerService } from '../common/logger/console-service.js';
 
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
   private initialData!: TMockData;
+  private logger: LoggerInterface;
+
+  constructor() {
+    this.logger = new ConsoleLoggerService();
+  }
 
   public async execute(...parameters:string[]): Promise<void> {
     const [count, filepath, url] = parameters;
@@ -17,7 +24,7 @@ export default class GenerateCommand implements CliCommandInterface {
     try {
       this.initialData = await got.get(url).json();
     } catch {
-      return console.log(chalk.red(`Can't fetch data from ${url}.`));
+      return this.logger.info(chalk.red(`Can't fetch data from ${url}.`));
     }
 
     const offerGeneratorString = new FilmGenerator(this.initialData);
@@ -27,6 +34,6 @@ export default class GenerateCommand implements CliCommandInterface {
       await tsvFileWriter.write(offerGeneratorString.generate());
     }
 
-    console.log(chalk.blueBright(`File ${filepath} was created!`));
+    this.logger.info(chalk.blueBright(`File ${filepath} was created!`));
   }
 }

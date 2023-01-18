@@ -1,4 +1,5 @@
 import {TFilm, tryGetGenre} from '../types/film.js';
+import crypto from 'crypto';
 
 export const createMovie = (row: string): TFilm => {
   const tokens = row.replace('\n', '').split('\t');
@@ -54,11 +55,7 @@ export const getErrorMessage = (error: unknown): string => error instanceof Erro
 export const generateRandomValue = (rangeStart: number, rangeEnd: number, toFixed = 0) =>
   +((Math.random() * (rangeStart - rangeEnd)) + rangeStart).toFixed(toFixed);
 
-export const getRandomItems = <T>(items: T[]):T[] => {
-  const startPosition = generateRandomValue(0, items.length - 1);
-  const endPosition = startPosition + generateRandomValue(startPosition, items.length);
-  return items.slice(startPosition, endPosition);
+export const createSHA256 = (line: string, salt: string): string => {
+  const shaHasher = crypto.createHmac('sha256', salt);
+  return shaHasher.update(line).digest('hex');
 };
-
-export const getRandomItem = <T>(items: T[]):T =>
-  items[generateRandomValue(0, items.length -1)];
