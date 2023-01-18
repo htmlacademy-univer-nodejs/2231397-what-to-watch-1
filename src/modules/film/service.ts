@@ -38,6 +38,10 @@ export class FilmService implements FilmServiceInterface {
     return this.filmModel.findOne({ isPromo: true }).populate('user');
   }
 
+  async exists(documentId: string): Promise<boolean> {
+    return (this.filmModel.exists({_id: documentId})) !== null;
+  }
+
   async getMovies(): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.aggregate([
       {
