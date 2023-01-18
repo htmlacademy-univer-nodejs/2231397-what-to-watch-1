@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail({}, {message: 'email must be valid'})
@@ -11,10 +11,8 @@ export class CreateUserDto {
   @Length(6, 12, {message: 'min length for password is 6, max is 12'})
   public password!: string;
 
-  @Matches(/[^\\s]+(.*?)\\.(jpg|png)$/, {message: 'avatarPath must be .jpg or .png format image'})
-  public avatarPath?: string;
-
-  public moviesToWatch: string[] = [];
+  @IsOptional()
+  public avatar?: Buffer;
 }
 
 export class LoginUserDto {

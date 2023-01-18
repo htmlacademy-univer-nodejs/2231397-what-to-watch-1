@@ -19,7 +19,8 @@ import { CommentResponse } from '../comment/response.js';
 import * as core from 'express-serve-static-core';
 import { DocumentType } from '@typegoose/typegoose';
 import { FilmEntity } from './entity.js';
-import { TGenre } from '../../types/film.js';
+import {TGenre, tryGetGenre} from '../../types/film.js';
+import { PrivateMiddleware } from '../../common/middlewares/private.js';
 
 @injectable()
 export class FilmController extends Controller {
@@ -36,7 +37,10 @@ export class FilmController extends Controller {
       path: FilmRoute.CREATE,
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(FilmDto)]
+      middlewares: [
+        new PrivateMiddleware(),
+        new ValidateDtoMiddleware(FilmDto)
+      ]
     });
     this.addRoute<FilmRoute>({
       path: FilmRoute.MOVIE,
@@ -52,6 +56,7 @@ export class FilmController extends Controller {
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
+        new PrivateMiddleware(),
         new ValidateObjectIdMiddleware('movieId'),
         new ValidateDtoMiddleware(FilmDto),
         new DocumentExistsMiddleware(this.filmService, 'Movie', 'movieId')
@@ -62,6 +67,7 @@ export class FilmController extends Controller {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
+        new PrivateMiddleware(),
         new ValidateObjectIdMiddleware('movieId'),
         new DocumentExistsMiddleware(this.filmService, 'Movie', 'movieId')
       ]
@@ -79,12 +85,21 @@ export class FilmController extends Controller {
   }
 
   async index(req: Request<unknown, unknown, unknown, {
-    limit?: number;
+    limit?: string;
     genre?: TGenre;
   }>, res: Response): Promise<void> {
-    const { genre, limit } = req.query;
+    const genre = req.query.genre;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
     let movies: DocumentType<FilmEntity>[];
     if (genre) {
+      const validatedGenre = tryGetGenre(genre);
+      if (!validatedGenre){
+        throw new HttpError(
+          StatusCodes.BAD_REQUEST,
+          `Unrecognised genre: ${genre}.`,
+          'getGenre'
+        );
+      }
       movies = await this.filmService.findByGenre(genre, limit);
     } else {
       movies = await this.filmService.getMovies(limit);
@@ -98,9 +113,10 @@ export class FilmController extends Controller {
     this.ok(res, fillDTO(CommentResponse, comments));
   }
 
-  async create({body}: Request<Record<string, unknown>, Record<string, unknown>, FilmDto>, res: Response): Promise<void> {
-    const result = await this.filmService.create(body);
-    this.created(res, fillDTO(MovieModelResponse, result));
+  async create({body, user}: Request<Record<string, unknown>, Record<string, unknown>, FilmDto>, res: Response): Promise<void> {
+    const result = await this.filmService.create(body, user.id);
+    const film = await this.filmService.findById(result.id);
+    this.created(res, fillDTO(MovieModelResponse, film));
   }
 
   async show({params}: Request<Record<string, unknown>>, res: Response): Promise<void> {
@@ -108,8 +124,16 @@ export class FilmController extends Controller {
     this.ok(res, fillDTO(MovieModelResponse, result));
   }
 
-  async update({params, body}: Request<Record<string, string>, Record<string, unknown>, FilmDto>, res: Response): Promise<void> {
+  async update({params, body, user}: Request<Record<string, string>, Record<string, unknown>, FilmDto>, res: Response): Promise<void> {
     const film = await this.filmService.findById(params.movieId);
+
+    if (film?.user?.id !== user.id) {
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        `User with id ${user.id} doesn't own film card with id ${film?.id}, so can't edit it.`,
+        'MovieController'
+      );
+    }
 
     if (!film) {
       throw new HttpError(StatusCodes.NOT_FOUND, `Фильма с id «${params.movieId}» не существует.`, 'MovieController');
@@ -119,9 +143,16 @@ export class FilmController extends Controller {
     this.ok(res, fillDTO(MovieModelResponse, result));
   }
 
-  async delete({params}: Request<Record<string, string>>, res: Response): Promise<void> {
+  async delete({params, user}: Request<Record<string, string>>, res: Response): Promise<void> {
     const film = await this.filmService.findById(`${params.movieId}`);
 
+    if (film?.user?.id !== user.id) {
+      throw new HttpError(
+        StatusCodes.FORBIDDEN,
+        `User with id ${user.id} doesn't own movie card with id ${film?.id}, so can't delete it.`,
+        'MovieController'
+      );
+    }
     if (!film) {
       throw new HttpError(StatusCodes.NOT_FOUND, `Фильма с id «${params.movieId}» не существует.`, 'MovieController');
     }

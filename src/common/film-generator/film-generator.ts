@@ -35,7 +35,7 @@ export class FilmGenerator implements FIlmGeneratorInterface {
     const backgroundPath = getRandomItem<string>(this.mockData.backgroundPath);
     const backgroundColor = getRandomItem<string>(this.mockData.backgroundColor);
 
-    const { name, email, avatarPath } = user;
+    const { name, email } = user;
     return [
       movieName,
       movieDescription,
@@ -51,7 +51,6 @@ export class FilmGenerator implements FIlmGeneratorInterface {
       commentsAmount,
       name,
       email,
-      avatarPath,
       posterPath,
       backgroundPath,
       backgroundColor

@@ -6,6 +6,7 @@ import { Component } from '../../entities/component.js';
 import { LoggerInterface } from '../../common/logger/interface.js';
 import { FilmDto } from './dto.js';
 import { FILM_DISPLAY_LIMIT } from './const.js';
+import { TGenre } from '../../types/film.js';
 
 @injectable()
 export class FilmService implements FilmServiceInterface {
@@ -14,11 +15,11 @@ export class FilmService implements FilmServiceInterface {
     @inject(Component.MovieModel) private readonly filmModel: types.ModelType<FilmEntity>
   ) {}
 
-  async create(dto: FilmDto): Promise<DocumentType<FilmEntity>> {
-    const movie = await this.filmModel.create(dto);
+  async create(dto: FilmDto, userId: string): Promise<DocumentType<FilmEntity>> {
+    const film = await this.filmModel.create({...dto, user: userId});
     this.logger.info(`New movie created: ${dto.movieName}`);
 
-    return movie;
+    return film;
   }
 
   async findById(movieId: string): Promise<DocumentType<FilmEntity> | null> {
@@ -30,7 +31,7 @@ export class FilmService implements FilmServiceInterface {
     return Promise.resolve(null);
   }
 
-  async findByGenre(genre: string, limit?: number): Promise<DocumentType<FilmEntity>[]> {
+  async findByGenre(genre: TGenre, limit?: number): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.find({ genre }, {}, { limit }).populate('user');
   }
 
@@ -44,11 +45,7 @@ export class FilmService implements FilmServiceInterface {
 
   async getMovies(limit?: number): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.aggregate([
-      {
-        $addFields: {
-          id: { $toString: '$_id' },
-        }
-      },
+      {$sort: {publishingDate: 1}},
       { $limit: limit || FILM_DISPLAY_LIMIT }
     ]);
   }
@@ -58,7 +55,7 @@ export class FilmService implements FilmServiceInterface {
   }
 
   async updateById(movieId: string, dto: FilmDto): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findByIdAndUpdate(movieId, dto).populate('user');
+    return this.filmModel.findByIdAndUpdate(movieId, dto, { new: true }).populate('user');
   }
 
   async updateMovieRating(movieId: string, newRating: number): Promise<void | null> {

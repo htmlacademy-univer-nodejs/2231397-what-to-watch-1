@@ -4,5 +4,5 @@ import { TComment } from './dto.js';
 
 export interface CommentServiceInterface {
   findByMovieId(movieId: string): Promise<DocumentType<CommentEntity>[]>;
-  create(dto: TComment): Promise<DocumentType<CommentEntity>>;
+  create(dto: TComment, user: string): Promise<DocumentType<CommentEntity>>;
 }

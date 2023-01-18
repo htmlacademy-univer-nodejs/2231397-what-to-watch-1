@@ -1,5 +1,5 @@
 import { DocumentType } from '@typegoose/typegoose';
-import { CreateUserDto } from './dto.js';
+import { CreateUserDto, LoginUserDto } from './dto.js';
 import { UserEntity } from './entity.js';
 import { FilmEntity } from '../film/entity.js';
 
@@ -10,4 +10,7 @@ export interface UserServiceInterface {
   findToWatch(userId: string): Promise<DocumentType<FilmEntity>[]>;
   addToWatch(movieId: string, userId: string): Promise<void | null>;
   deleteToWatch(movieId: string, userId: string): Promise<void | null>;
+  verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null>;
+  findById(userId: string): Promise<DocumentType<UserEntity> | null>;
+  setUserAvatarPath(userId: string, avatarPath: string): Promise<void | null>;
 }
