@@ -39,6 +39,8 @@
     "npm": "8.8.0"
   },
   "dependencies": {
+    "@typegoose/typegoose": "9.12.1",
+    "mongoose": "6.6.0",
     "chalk": "5.0.1",
     "dayjs": "1.11.5",
     "got": "12.5.1",

@@ -7,6 +7,10 @@ export type ConfigSchema = {
   PORT: number;
   DB_HOST: string;
   SALT: string;
+  DB_USER: string;
+  DB_PASSWORD: string;
+  DB_PORT: number;
+  DB_NAME: string;
 }
 
 export const configSchema = convict<ConfigSchema>({
@@ -17,7 +21,7 @@ export const configSchema = convict<ConfigSchema>({
     default: 4000
   },
   DB_HOST: {
-    doc: 'IP address of the database server (MongoDB)',
+    doc: 'IP address of the database server',
     format: 'ipaddress',
     env: 'DB_HOST',
     default: '127.0.0.1'
@@ -26,6 +30,30 @@ export const configSchema = convict<ConfigSchema>({
     doc: 'Salt for password hash',
     format: String,
     env: 'SALT',
-    default: null
+    default: 'dfsghkjdshfkjdhskfjhsdf'
+  },
+  DB_USER: {
+    doc: 'Username to connect to the database',
+    format: String,
+    env: 'DB_USER',
+    default: 'admin',
+  },
+  DB_PASSWORD: {
+    doc: 'Database connection password',
+    format: String,
+    env: 'DB_PASSWORD',
+    default: 'test',
+  },
+  DB_PORT: {
+    doc: 'Port to connect to the database',
+    format: 'port',
+    env: 'DB_PORT',
+    default: 27017,
+  },
+  DB_NAME: {
+    doc: 'Database name',
+    format: String,
+    env: 'DB_NAME',
+    default: 'course-nodejs-wtw-db'
   }
 });
