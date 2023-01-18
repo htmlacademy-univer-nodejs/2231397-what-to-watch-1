@@ -9,14 +9,17 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { HttpError } from '../../common/error/http-error.js';
 import { fillDTO } from '../../utils/common.js';
-import { MovieModelResponse } from './response.js';
+import { FilmListItemResponse, MovieModelResponse } from './response.js';
 import { FilmDto } from './dto.js';
 import { CommentServiceInterface } from '../comment/service-interface.js';
-import {ValidateDtoMiddleware} from '../../common/middlewares/validate-dto.js';
-import {ValidateObjectIdMiddleware} from '../../common/middlewares/validate-object-identifier.js';
-import {DocumentExistsMiddleware} from '../../common/middlewares/document-exist.js';
-import {CommentResponse} from '../comment/response.js';
+import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.js';
+import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-object-identifier.js';
+import { DocumentExistsMiddleware } from '../../common/middlewares/document-exist.js';
+import { CommentResponse } from '../comment/response.js';
 import * as core from 'express-serve-static-core';
+import { DocumentType } from '@typegoose/typegoose';
+import { FilmEntity } from './entity.js';
+import { TGenre } from '../../types/film.js';
 
 @injectable()
 export class FilmController extends Controller {
@@ -75,9 +78,18 @@ export class FilmController extends Controller {
     });
   }
 
-  async index(_req: Request, res: Response): Promise<void> {
-    const movies = await this.filmService.getMovies();
-    const movieResponse = fillDTO(MovieModelResponse, movies);
+  async index(req: Request<unknown, unknown, unknown, {
+    limit?: number;
+    genre?: TGenre;
+  }>, res: Response): Promise<void> {
+    const { genre, limit } = req.query;
+    let movies: DocumentType<FilmEntity>[];
+    if (genre) {
+      movies = await this.filmService.findByGenre(genre, limit);
+    } else {
+      movies = await this.filmService.getMovies(limit);
+    }
+    const movieResponse = fillDTO(FilmListItemResponse, movies);
     this.ok(res, movieResponse);
   }
 

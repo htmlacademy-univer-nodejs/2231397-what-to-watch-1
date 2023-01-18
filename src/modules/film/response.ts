@@ -47,3 +47,26 @@ export class MovieModelResponse {
   @Expose()
   public backgroundColor!: string;
 }
+
+export class FilmListItemResponse {
+  @Expose()
+  public movieName!: string;
+
+  @Expose()
+  public publishDate!: number;
+
+  @Expose()
+  public genre!: TGenre;
+
+  @Expose()
+  public previewVideoPath!: string;
+
+  @Expose()
+  public userId!: string;
+
+  @Expose()
+  public posterPath!: string;
+
+  @Expose()
+  public commentsCount!: number;
+}

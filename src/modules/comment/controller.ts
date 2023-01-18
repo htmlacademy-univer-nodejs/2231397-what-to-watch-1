@@ -39,7 +39,6 @@ export class CommentController extends Controller {
     }
 
     const comment = await this.commentService.create(body);
-    await this.filmService.increaseCommentsCount(body.movieId);
     this.created(res, fillDTO(CommentResponse, comment));
   }
 }
