@@ -13,6 +13,8 @@ export class CreateUserDto {
 
   @Matches(/[^\\s]+(.*?)\\.(jpg|png)$/, {message: 'avatarPath must be .jpg or .png format image'})
   public avatarPath?: string;
+
+  public moviesToWatch: string[] = [];
 }
 
 export class LoginUserDto {

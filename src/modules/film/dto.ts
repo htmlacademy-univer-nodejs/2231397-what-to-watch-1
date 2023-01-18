@@ -1,5 +1,5 @@
 import { TGenre } from '../../types/film.js';
-import { IsArray, IsDateString, IsInt, IsMongoId, IsString, Length, Matches, Max, Min } from 'class-validator';
+import {IsArray, IsBoolean, IsDateString, IsInt, IsMongoId, IsString, Length, Matches, Max, Min} from 'class-validator';
 
 
 export class FilmDto {
@@ -52,4 +52,7 @@ export class FilmDto {
 
   @IsString({message: 'backgroundColor is required'})
   public backgroundColor!: string;
+
+  @IsBoolean({message: 'isPromo should be boolean'})
+  public isPromo?: boolean;
 }

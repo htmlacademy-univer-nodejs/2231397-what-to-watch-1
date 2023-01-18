@@ -42,28 +42,14 @@ export class FilmService implements FilmServiceInterface {
     return (this.filmModel.exists({_id: documentId})) !== null;
   }
 
-  async getMovies(): Promise<DocumentType<FilmEntity>[]> {
+  async getMovies(limit?: number): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel.aggregate([
-      {
-        $lookup: {
-          from: 'comments',
-          let: { movieId: '$_id' },
-          pipeline: [
-            { $match: { $expr: { $in: ['$$movieId', '$movies'] } } },
-            { $project: { _id: 1 } }
-          ],
-          as: 'comments'
-        },
-      },
       {
         $addFields: {
           id: { $toString: '$_id' },
-          commentsCount: { $size: '$comments' },
-          rating: { $avg: '$comments.rating' }
         }
       },
-      { $unset: 'comments' },
-      { $limit: FILM_DISPLAY_LIMIT }
+      { $limit: limit || FILM_DISPLAY_LIMIT }
     ]);
   }
 
