@@ -11,7 +11,7 @@ import { inject, injectable } from 'inversify';
 import { HttpError } from '../../common/error/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { createJWT, fillDTO } from '../../utils/common.js';
-import {LoggedUserResponse, UserResponse} from './response.js';
+import { LoggedUserResponse, UserResponse } from './response.js';
 import { MovieModelResponse } from '../film/response.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-object-identifier.js';
@@ -72,8 +72,12 @@ export class UserController extends Controller {
     });
   }
 
-  async get(_: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>, _res: Response): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController',);
+  async get({ user }: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>, _res: Response): Promise<void> {
+    if (!user) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
+    }
+    const userFromDb = await this.userService.findByEmail(user.email);
+    this.ok(_res, fillDTO(LoggedUserResponse, userFromDb));
   }
 
   async logout(_: Request<Record<string, unknown>, Record<string, unknown>, Record<string, string>>, _res: Response): Promise<void> {
