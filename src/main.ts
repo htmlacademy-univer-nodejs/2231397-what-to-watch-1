@@ -12,22 +12,34 @@ import { CommentService } from './modules/comment/service.js';
 import { CommentEntity, CommentModel } from './modules/comment/entity.js';
 import { ControllerInterface } from './common/controller/interface.js';
 import { ExceptionFilterInterface } from './common/error/exception-filter-interface.js';
-import {ExceptionFilter} from './common/error/exception-filter.js';
+import { ExceptionFilter } from './common/error/exception-filter.js';
 import { UserController } from './modules/user/controller.js';
 import { FilmController } from './modules/film/controller.js';
 import { CommentController } from './modules/comment/controller.js';
+import { DatabaseInterface } from './common/db/interface.js';
+import { DatabaseService } from './common/db/service.js';
+import { UserServiceInterface } from './modules/user/service-interface.js';
+import { FilmService} from './modules/film/service.js';
+import { FilmServiceInterface } from './modules/film/service-interface.js';
+import { FilmEntity, FilmModel } from './modules/film/entity.js';
+import { UserEntity, UserModel } from './modules/user/entity.js';
+import { UserService } from './modules/user/service.js';
 
 const applicationContainer = new Container();
 applicationContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
 applicationContainer.bind<LoggerInterface>(Component.LoggerInterface).to(LoggerService).inSingletonScope();
 applicationContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigService).inSingletonScope();
+applicationContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(DatabaseService).inSingletonScope();
+applicationContainer.bind<UserServiceInterface>(Component.UserServiceInterface).to(UserService);
+applicationContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+applicationContainer.bind<FilmServiceInterface>(Component.MovieServiceInterface).to(FilmService);
+applicationContainer.bind<types.ModelType<FilmEntity>>(Component.MovieModel).toConstantValue(FilmModel);
 applicationContainer.bind<CommentServiceInterface>(Component.CommentServiceInterface).to(CommentService);
 applicationContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel).toConstantValue(CommentModel);
 applicationContainer.bind<ControllerInterface>(Component.FilmController).to(FilmController).inSingletonScope();
 applicationContainer.bind<ExceptionFilterInterface>(Component.ExceptionFilterInterface).to(ExceptionFilter).inSingletonScope();
 applicationContainer.bind<ControllerInterface>(Component.UserController).to(UserController).inSingletonScope();
 applicationContainer.bind<ControllerInterface>(Component.CommentController).to(CommentController).inSingletonScope();
-
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();

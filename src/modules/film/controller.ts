@@ -19,7 +19,7 @@ import { CommentResponse } from '../comment/response.js';
 import * as core from 'express-serve-static-core';
 import { DocumentType } from '@typegoose/typegoose';
 import { FilmEntity } from './entity.js';
-import {TGenre, tryGetGenre} from '../../types/film.js';
+import { TGenre, tryGetGenre } from '../../types/film.js';
 import { PrivateMiddleware } from '../../common/middlewares/private.js';
 
 @injectable()
@@ -33,6 +33,7 @@ export class FilmController extends Controller {
 
     this.logger.info('Register routes for MovieController.');
 
+    this.addRoute<FilmRoute>({path: FilmRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
     this.addRoute<FilmRoute>({
       path: FilmRoute.CREATE,
       method: HttpMethod.Post,
@@ -72,7 +73,6 @@ export class FilmController extends Controller {
         new DocumentExistsMiddleware(this.filmService, 'Movie', 'movieId')
       ]
     });
-    this.addRoute<FilmRoute>({path: FilmRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
     this.addRoute<FilmRoute>({
       path: FilmRoute.COMMENTS,
       method: HttpMethod.Get,
@@ -81,6 +81,11 @@ export class FilmController extends Controller {
         new ValidateObjectIdMiddleware('movieId'),
         new DocumentExistsMiddleware(this.filmService, 'Movie', 'movieId'),
       ]
+    });
+    this.addRoute<FilmRoute>({
+      path: FilmRoute.ROOT,
+      method: HttpMethod.Get,
+      handler: this.index
     });
   }
 
